@@ -3,13 +3,13 @@ import ProductManager from "../Product.js";
 
 const productRouter = Router();
 
-const pM = new ProductManager("./src/Productos.json");
+const pM = new ProductManager("./src1/Productos.json");
 
 productRouter.get("/", async (req, res) => {
   try {
-    let users = await pM.getProducts(req.query.limit);
+    let prods = await pM.getProducts(req.query.limit);
 
-    res.send(users);
+    res.send({ status: "succes", payload: prods });
   } catch (e) {
     res.status(500).send(e);
   }
@@ -17,7 +17,7 @@ productRouter.get("/", async (req, res) => {
 productRouter.get("/:id", async (req, res) => {
   try {
     let prod = await pM.getProductById(Number(req.params.id));
-    res.send(prod);
+    res.send({ status: "succes", payload: prod });
   } catch (e) {
     res.status(400).send(e);
   }
@@ -30,7 +30,7 @@ productRouter.post("/", (req, res) => {
       res.send("El producto se agrego satisfactoriamente");
     })
     .catch((e) => {
-      res.status(400).send(e);
+      res.status(400).send(e.message);
     });
 });
 

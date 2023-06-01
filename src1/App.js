@@ -1,5 +1,6 @@
 import express from "express";
 import { productRouter } from "./routes/product.router.js";
+import { cartRouter } from "./routes/carrito.router.js";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
@@ -16,6 +17,7 @@ app.use(express.static(__dirname + "/public"));
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/product", productRouter);
+app.use("/api/cart", cartRouter);
 
 const servidor = 8080;
 

@@ -53,7 +53,6 @@ export default class ProductManager {
   }
 
   async getProducts(limit) {
-    console.log(limit);
     const res = await fs.readFileSync(this.#path, "utf-8");
     const res1 = JSON.parse(res);
 
@@ -83,7 +82,7 @@ export default class ProductManager {
     });
 
     if (prodIndex === -1) {
-      throw "Error no existe el producto";
+      throw new Error("Error no existe el producto");
     }
     return prodIndex;
   }
