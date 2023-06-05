@@ -1,12 +1,12 @@
 import fs from "fs";
-import ProductManager from "./Product.js";
+import { productManager } from "./Product.js";
 
-export default class CarritoManage {
+class CarritoManage {
   #path;
   #prodMan;
-  constructor(path, pathProds) {
+  constructor(path) {
     this.#path = path;
-    this.#prodMan = new ProductManager(pathProds);
+    this.#prodMan = productManager;
     this.inicializar();
   }
   async inicializar() {
@@ -27,25 +27,25 @@ export default class CarritoManage {
 
   async agregarProdACarrito(idC, idP) {
     try {
+      let status = false;
       const prod = await this.#prodMan.getProductById(idP);
-      console.log(prod);
       const carritos = await this.getCarritos();
-      const carIndex = this.#getIndexById(idC, carritos);
-
-      try {
-        const prodIndex = this.#getIndexById(
-          prod.id,
-          carritos[carIndex].products
-        );
-        carritos[carIndex].products[prodIndex].Quantity++;
-      } catch (e) {
-        if (e.message === "No esta el prod") {
-          console.log(carritos);
-          carritos[carIndex].products.push({ id: idP, Quantity: 1 });
-        } else {
-          throw e;
+      carritos.map((cart) => {
+        if (cart.id === idC) {
+          let statusProd = false;
+          cart.products.map((product) => {
+            if (product.id === prod.id) {
+              statusProd = true;
+              product.Quantity++;
+            }
+            return product;
+          });
+          if (!statusProd) cart.products.push({ id: prod.id, Quantity: 1 });
+          status = true;
+          return cart;
         }
-      }
+      });
+      if (!status) throw new Error("No existe el carrito");
       await this.#writeFileWOIDN(carritos);
     } catch (e) {
       throw e;
@@ -62,13 +62,14 @@ export default class CarritoManage {
       return carr.id === id;
     });
     if (carritoIndex === -1) {
-      throw new Error("No esta el prod");
+      throw new Error("No esta el id");
     }
     return carritoIndex;
   }
 
   async getCarritos(limit) {
-    const res = await fs.readFileSync(this.#path, "utf-8");
+    const res = await fs.promises.readFile(this.#path, "utf-8");
+
     const res1 = JSON.parse(res);
 
     if (limit != undefined && limit < res1.carritos.length) {
@@ -83,20 +84,20 @@ export default class CarritoManage {
       carritos: carritos,
     };
 
-    await fs.writeFileSync(this.#path, JSON.stringify(file));
+    await fs.promises.writeFile(this.#path, JSON.stringify(file));
     console.log(
       "----------------Se overwriteo el file de carritos---------------------------"
     );
   }
   async deleteFile() {
     try {
-      await fs.rmSync(this.#path);
+      fs.rmSync(this.#path);
     } catch (e) {
       throw e;
     }
   }
   async #getId() {
-    const res = await fs.readFileSync(this.#path, "utf-8");
+    const res = await fs.promises.readFile(this.#path, "utf-8");
     const res1 = JSON.parse(res);
     return res1.id;
   }
@@ -104,10 +105,32 @@ export default class CarritoManage {
   async getProdsFromCarrito(id) {
     try {
       const carritos = await this.getCarritos();
-      const index = this.#getIndexById(id, carritos);
-      return carritos[index].products;
+      const cart = carritos.find((cart) => {
+        return cart.id === id;
+      });
+      if (!cart) throw new Error("No se encontro el carrito");
+      return cart.products;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getProdConId(id) {
+    try {
+      return await this.#prodMan.getProductById(id);
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getProdsConId(id) {
+    try {
+      const idProds = await this.getProdsFromCarrito(id);
+      const products = await this.#prodMan.getProdsWithIDS(idProds);
+      return products;
     } catch (error) {
       throw error;
     }
   }
 }
+
+const carritoManager = new CarritoManage("./src1/controllers/Carritos.json");
+export { carritoManager };

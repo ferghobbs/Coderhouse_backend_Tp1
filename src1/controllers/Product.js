@@ -1,6 +1,6 @@
 import fs from "fs";
 
-export default class ProductManager {
+class ProductManager {
   #path;
   constructor(path) {
     this.#path = path;
@@ -31,7 +31,7 @@ export default class ProductManager {
   async addProduct(title, description, price, thumbnail, code, stock) {
     const productos = await this.getProducts();
     if (productos.findIndex((p) => p.code === code) > -1) {
-      throw "Error: Codigo duplicado";
+      throw new Error("Error: Codigo duplicado");
     }
 
     let prod = {
@@ -44,7 +44,9 @@ export default class ProductManager {
       stock,
     };
     if (Object.values(prod).includes(undefined)) {
-      throw "Error: Es necesario llenar todos los campos del producto";
+      throw new Error(
+        "Error: Es necesario llenar todos los campos del producto"
+      );
     }
     const id = await this.#getId();
     prod = { ...prod, id };
@@ -53,7 +55,7 @@ export default class ProductManager {
   }
 
   async getProducts(limit) {
-    const res = await fs.readFileSync(this.#path, "utf-8");
+    const res = await fs.promises.readFile(this.#path, "utf-8");
     const res1 = JSON.parse(res);
 
     if (limit != undefined && limit < res1.productos.length) {
@@ -71,7 +73,7 @@ export default class ProductManager {
     }
   }
   async #getId() {
-    const res = await fs.readFileSync(this.#path, "utf-8");
+    const res = await fs.promises.readFile(this.#path, "utf-8");
     const res1 = JSON.parse(res);
     return res1.id;
   }
@@ -152,7 +154,7 @@ export default class ProductManager {
       productos: productos,
     };
 
-    await fs.writeFileSync(this.#path, JSON.stringify(file));
+    await fs.promises.writeFile(this.#path, JSON.stringify(file));
     console.log(
       "----------------Se overwriteo el file---------------------------"
     );
@@ -170,4 +172,20 @@ export default class ProductManager {
       return arr1.includes(element);
     });
   }
+
+  async getProdsWithIDS(listId) {
+    try {
+      const prods = await this.getProducts();
+
+      const prodsFiltrados = prods.filter((prod) => {
+        return listId.includes(prod.id);
+      });
+      return prodsFiltrados;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
+
+const productManager = new ProductManager("./src1/controllers/Productos.json");
+export { productManager };

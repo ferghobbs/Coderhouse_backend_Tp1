@@ -1,13 +1,11 @@
 import { Router } from "express";
-import CarritoManage from "../carrito.js";
+import { carritoManager } from "../controllers/carrito.js";
 
 const cartRouter = Router();
 
-const cM = new CarritoManage("./src1/Carritos.json", "./src1/Productos.json");
-
 cartRouter.post("/", async (req, res) => {
   try {
-    let idC = await cM.addCarrito();
+    let idC = await carritoManager.addCarrito();
     res.send(`Se agrego el carrito con id: ${idC}`);
   } catch (e) {
     res.status(400).send(e.message);
@@ -16,7 +14,7 @@ cartRouter.post("/", async (req, res) => {
 
 cartRouter.post("/:cid/product/:pid", async (req, res) => {
   try {
-    await cM.agregarProdACarrito(
+    await carritoManager.agregarProdACarrito(
       Number(req.params.cid),
       Number(req.params.pid)
     );
@@ -32,13 +30,15 @@ cartRouter.post("/:cid/product/:pid", async (req, res) => {
 
 cartRouter.get("/:cid", async (req, res) => {
   try {
-    const carts = await cM.getProdsFromCarrito(Number(req.params.cid));
+    const carts = await carritoManager.getProdsFromCarrito(
+      Number(req.params.cid)
+    );
     res.send({
       status: "succes",
       products: carts,
     });
   } catch (e) {
-    res.status(500).send(e.message);
+    res.status(400).send(e.message);
   }
 });
 
