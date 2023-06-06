@@ -1,0 +1,25 @@
+<center>
+<div>
+    <form method="post" action="/api/product">
+        <input type="text" required id="title" name="title" placeholder="title">
+        <input type="text" required id="description" name="description" placeholder="description">
+        <input type="number" required id="price" name="price" placeholder="price">
+        <input type="number" required id="stock" name="stock" placeholder="stock">
+        <input type="text" required id="thumbnail" name="thumbnail" placeholder="thumbnail">
+        <input type="text" required id="code" name="code" placeholder="code">
+        <button type="submit" redirect="false">Crear producto</button>
+    </form>
+  {{#if msg}}
+    <div>
+        <p>
+            {{msg}}
+        </p>
+    </div>
+  {{/if}}  
+</div>
+<div>
+<div id="prods"></div>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/realTimeProducts.js"></script>
+</center>

@@ -13,9 +13,9 @@ app.set("views", __dirname + "/views");
 console.log(__dirname + "/views");
 app.set("view engine", "handlebars");
 
-//app.use(express.static("public"));
+app.use(express.static("public"));
 app.use(express.json());
-//app.use(express.static(__dirname + "/public"));
+app.use(express.static(__dirname + "/public"));
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/product", productRouter);
@@ -23,8 +23,8 @@ app.use("/api/cart", cartRouter);
 app.use("/", routerView);
 const servidor = 8080;
 
-app.listen(servidor, () => {
+const httpServer = app.listen(servidor, () => {
   console.log(`Se prendio el servidor en el puerto: ${servidor}`);
 });
 
-export { app };
+export { httpServer };
