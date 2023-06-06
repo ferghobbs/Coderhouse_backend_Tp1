@@ -8,6 +8,10 @@
         <input type="text" required id="thumbnail" name="thumbnail" placeholder="thumbnail">
         <input type="text" required id="code" name="code" placeholder="code">
         <button type="submit" redirect="false">Crear producto</button>
+    </form>   
+     <form id="deleteForm" action="/api/product" method="post">
+        <input type="text" required id="idDel" name="idDel" placeholder="idDel">
+        <button type="submit" redirect="false">Eliminar producto</button>
     </form>
   {{#if msg}}
     <div>
