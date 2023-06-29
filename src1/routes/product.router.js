@@ -74,7 +74,6 @@ export { productRouter };
 
 function conectarSocket(server, prods, admin) {
   admin = true;
-  console.log(prods);
   socketServer = new Server(httpServer);
 
   socketServer.on("connection", (socket) => {
